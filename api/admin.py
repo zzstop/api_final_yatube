@@ -11,9 +11,9 @@ class PostAdmin(admin.ModelAdmin):
 
 
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'text', 'author', 'created',)
+    list_display = ('pk', 'text', 'author', 'pub_date',)
     search_fields = ('text',)
-    list_filter = ('created',)
+    list_filter = ('pub_date',)
     empty_value_display = '-пусто-'
 
 
