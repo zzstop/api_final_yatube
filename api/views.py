@@ -1,8 +1,6 @@
 from django.contrib.auth import get_user_model
-from rest_framework import viewsets
-from rest_framework.generics import ListCreateAPIView, get_object_or_404
-from rest_framework.permissions import (IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
+from django.shortcuts import get_object_or_404
+from rest_framework import filters, generics, permissions, viewsets
 
 from .models import Post
 from .permissions import IsAuthorOrReadOnly
@@ -12,7 +10,8 @@ User = get_user_model()
 
 
 class PostViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly,)
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly,)
     serializer_class = PostSerializer
     queryset = Post.objects.all()
 
@@ -21,26 +20,29 @@ class PostViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly,)
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly,)
     serializer_class = CommentSerializer
 
     def perform_create(self, serializer):
         save_params = {
             'author': self.request.user,
-            'post_id': self.kwargs.get('post_id', '')
+            'post_id': self.kwargs.get('post_id')
         }
         serializer.save(**save_params)
 
     def get_queryset(self):
-        post_id = self.kwargs.get('post_id', '')
+        post_id = self.kwargs.get('post_id')
         post = get_object_or_404(Post, pk=post_id)
         all_comments_of_post = post.comments.all()
         return all_comments_of_post
 
 
-class FollowAPIView(ListCreateAPIView):
-    permission_classes = (IsAuthenticated,)
+class FollowAPIView(generics.ListCreateAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = FollowSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('user__username',)
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.request.user)
@@ -48,9 +50,10 @@ class FollowAPIView(ListCreateAPIView):
         return user_followers
 
     def perform_create(self, serializer):
-        user = get_object_or_404(User, username=self.request.user)
-        following = self.request.data.get('following', '')
-        following = get_object_or_404(User, username=following)
-        if user == following:
-            return serializer.errors
-        serializer.save(user=user, following=following)
+        save_params = {
+            'user': get_object_or_404(
+                User, username=self.request.user),
+            'following': get_object_or_404(
+                User, username=self.request.data.get('following'))
+        }
+        serializer.save(**save_params)

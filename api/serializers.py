@@ -28,8 +28,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class FollowSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
-    following = serializers.StringRelatedField()
+    following = serializers.ReadOnlyField(source='following.username')
 
     class Meta:
         model = Follow
-        fields = ('id', 'user', 'following',)
+        fields = ('user', 'following',)
