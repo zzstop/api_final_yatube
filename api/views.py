@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, permissions, viewsets
 
 from .models import Group, Post
@@ -15,6 +16,8 @@ class PostViewSet(viewsets.ModelViewSet):
         permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly,)
     serializer_class = PostSerializer
     queryset = Post.objects.all()
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('group',)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -62,7 +65,4 @@ class FollowAPIView(generics.ListCreateAPIView):
 
 class GroupAPIView(generics.ListCreateAPIView):
     serializer_class = GroupSerializer
-
-    def get_queryset(self):
-        groups = Group.objects.all()
-        return groups
+    queryset = Group.objects.all()
