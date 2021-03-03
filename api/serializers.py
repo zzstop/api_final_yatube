@@ -22,7 +22,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('id', 'text', 'author', 'pub_date',)
+        fields = ('id', 'author', 'post', 'text', 'created',)
 
 
 class FollowSerializer(serializers.ModelSerializer):
