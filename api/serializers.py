@@ -11,10 +11,11 @@ class GroupSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     author = serializers.ReadOnlyField(source='author.username')
+    group = serializers.StringRelatedField()
 
     class Meta:
         model = Post
-        fields = ('id', 'text', 'author', 'pub_date',)
+        fields = ('id', 'group', 'text', 'author', 'pub_date',)
 
 
 class CommentSerializer(serializers.ModelSerializer):

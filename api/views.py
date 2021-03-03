@@ -2,9 +2,10 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework import filters, generics, permissions, viewsets
 
-from .models import Post
+from .models import Group, Post
 from .permissions import IsAuthorOrReadOnly
-from .serializers import CommentSerializer, FollowSerializer, PostSerializer
+from .serializers import (CommentSerializer, FollowSerializer, GroupSerializer,
+                          PostSerializer)
 
 User = get_user_model()
 
@@ -57,3 +58,11 @@ class FollowAPIView(generics.ListCreateAPIView):
                 User, username=self.request.data.get('following'))
         }
         serializer.save(**save_params)
+
+
+class GroupAPIView(generics.ListCreateAPIView):
+    serializer_class = GroupSerializer
+
+    def get_queryset(self):
+        groups = Group.objects.all()
+        return groups
