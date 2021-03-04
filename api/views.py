@@ -12,8 +12,7 @@ User = get_user_model()
 
 
 class PostViewSet(viewsets.ModelViewSet):
-    permission_classes = (
-        permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly,)
+    permission_classes = (IsAuthorOrReadOnly,)
     serializer_class = PostSerializer
     queryset = Post.objects.all()
     filter_backends = (DjangoFilterBackend,)
@@ -24,8 +23,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    permission_classes = (
-        permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly,)
+    permission_classes = (IsAuthorOrReadOnly,)
     serializer_class = CommentSerializer
 
     def get_queryset(self):
