@@ -28,18 +28,18 @@ class CommentViewSet(viewsets.ModelViewSet):
         permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly,)
     serializer_class = CommentSerializer
 
+    def get_queryset(self):
+        post_id = self.kwargs.get('post_id')
+        post = get_object_or_404(Post, pk=post_id)
+        all_comments_of_post = post.comments.all()
+        return all_comments_of_post
+
     def perform_create(self, serializer):
         save_params = {
             'author': self.request.user,
             'post_id': self.kwargs.get('post_id')
         }
         serializer.save(**save_params)
-
-    def get_queryset(self):
-        post_id = self.kwargs.get('post_id')
-        post = get_object_or_404(Post, pk=post_id)
-        all_comments_of_post = post.comments.all()
-        return all_comments_of_post
 
 
 class FollowAPIView(generics.ListCreateAPIView):
@@ -55,10 +55,9 @@ class FollowAPIView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         save_params = {
-            'user': get_object_or_404(
-                User, username=self.request.user),
-            'following': get_object_or_404(
-                User, username=self.request.data.get('following'))
+            'user': self.request.user,
+            'following': User.objects.get(
+                username=self.request.data.get('following'))
         }
         serializer.save(**save_params)
 
