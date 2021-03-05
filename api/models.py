@@ -23,7 +23,7 @@ class Post(models.Model):
         help_text='Выберите группу для публикации поста.')
 
     def __str__(self):
-        return self.text
+        return self.text[:15]
 
 
 class Comment(models.Model):
@@ -34,6 +34,9 @@ class Comment(models.Model):
     text = models.TextField()
     created = models.DateTimeField(
         'дата добавления', auto_now_add=True, db_index=True)
+
+    def __str__(self):
+        return self.text[:15]
 
 
 class Follow(models.Model):

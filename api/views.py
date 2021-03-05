@@ -52,12 +52,7 @@ class FollowAPIView(generics.ListCreateAPIView):
         return user_followers
 
     def perform_create(self, serializer):
-        save_params = {
-            'user': self.request.user,
-            'following': User.objects.get(
-                username=self.request.data.get('following'))
-        }
-        serializer.save(**save_params)
+        serializer.save(user=self.request.user)
 
 
 class GroupAPIView(generics.ListCreateAPIView):
